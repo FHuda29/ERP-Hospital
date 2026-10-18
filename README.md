@@ -41,6 +41,20 @@ Kode fasilitas **RSDEMO**, kata sandi **`Simrs2026!`**:
 
 Pasien contoh (fiktif): BUDI SANTOSO (peserta JKN), SITI AMINAH (alergi amoxicillin), ANDI PUTRA (anak).
 
+## Untuk Online
+Login:
+
+Kode fasilitas: RSDEMO
+Kusus Management Admin: 
+username: **`admin`**
+password: **`IndonesiaRaya#17`**
+
+Password semua akun demo: Rs-NFZEbIcTjqjG9
+Username sama seperti sebelumnya: admin, direktur, dr.andi, ns.budi, apoteker, kasir, casemix, dan seterusnya.
+Password lama Simrs2026! sudah ditolak, dan petunjuk akun demo tidak lagi tampil di halaman login publik.
+Password di atas sekarang tercatat di percakapan ini. Ganti password admin lewat menu Pengguna setelah masuk pertama kali.
+
+
 ### Pengujian
 
 ```bash
