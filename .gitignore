@@ -6,3 +6,5 @@ coverage/
 *.log
 backend/data/
 .DS_Store
+.env.prod
+backups/

@@ -36,7 +36,8 @@ import { InventoryModule, InventoryService } from '../modules/inventory/inventor
 import { ICD10, ICD9CM, INTERACTIONS, ITEMS, SERVICES } from './reference-data.js';
 
 export const DEMO_FACILITY_CODE = 'RSDEMO';
-export const DEMO_PASSWORD = 'Simrs2026!';
+/** Password akun demo; di server publik WAJIB diganti via env DEMO_PASSWORD. */
+export const DEMO_PASSWORD = process.env.DEMO_PASSWORD ?? 'Simrs2026!';
 
 const REVENUE_BY_CATEGORY: Record<string, string> = {
   ADMINISTRASI: ACC.PDP_ADMINISTRASI,
@@ -281,7 +282,7 @@ export class SeedService implements OnApplicationBootstrap {
         await this.db.insert(patientAllergies).values({ facilityId: fid, patientId: row.id, substance: 'Amoxicillin', category: 'OBAT', reaction: 'Urtikaria, sesak', severity: 'BERAT', recordedBy: admin.id });
       }
     }
-    this.logger.log(`Fasilitas demo siap. Login: kode ${DEMO_FACILITY_CODE}, user admin / ${DEMO_PASSWORD}`);
+    this.logger.log(`Fasilitas demo siap. Login: kode ${DEMO_FACILITY_CODE}, user admin`);
     return fid;
   }
 }

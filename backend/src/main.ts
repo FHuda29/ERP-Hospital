@@ -8,6 +8,8 @@ import { getConfig } from './config.js';
 export function configureApp(app: INestApplication) {
   const config = getConfig();
   app.setGlobalPrefix('api/v1', { exclude: ['health'] });
+  // Di belakang reverse proxy (Caddy/nginx): IP klien asli untuk jejak audit
+  if (process.env.TRUST_PROXY) app.getHttpAdapter().getInstance().set('trust proxy', Number(process.env.TRUST_PROXY) || process.env.TRUST_PROXY);
   app.use(helmet());
   app.enableCors({ origin: config.corsOrigin.split(','), credentials: false, exposedHeaders: ['X-Request-Id', 'Idempotent-Replay'] });
   app.enableShutdownHooks();

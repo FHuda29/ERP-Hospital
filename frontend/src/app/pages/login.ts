@@ -44,10 +44,12 @@ import { setFacilityTimezone } from '../core/ui';
             <input id="pw" class="input" type="password" name="password" [(ngModel)]="password" required autocomplete="current-password" />
           </div>
           <button class="btn btn-primary w-full" [disabled]="busy()">{{ busy() ? 'Memproses…' : 'Masuk' }}</button>
+          @if (isLocal) {
           <details class="text-xs text-ink-3">
             <summary class="cursor-pointer">Akun demo</summary>
             <p class="mt-2">Kode <b>RSDEMO</b>, kata sandi <b>Simrs2026!</b> — username: admin, direktur, dr.andi, dr.sari, ns.budi, ns.rina, admisi, rekammedis, apoteker, lab, lab2, radiologi, kasir, casemix, keuangan, gudang, pengadaan, mutu.</p>
           </details>
+          }
         </form>
       </div>
     </div>
@@ -62,6 +64,8 @@ export class LoginPage {
   password = '';
   readonly busy = signal(false);
   readonly error = signal('');
+  /** Petunjuk akun demo hanya tampil di lingkungan lokal, tidak di server publik. */
+  readonly isLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
 
   async submit() {
     this.busy.set(true);

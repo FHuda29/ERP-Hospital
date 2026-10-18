@@ -1,0 +1,73 @@
+# Produksi SIMRS di VPS bersama. Tidak membuka port host: TLS & domain ditangani
+# reverse proxy Caddy yang sudah ada, terhubung lewat jaringan eksternal "edge".
+#   docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
+name: simrs
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: simrs
+      POSTGRES_USER: simrs
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD wajib}
+      TZ: Asia/Jakarta
+    command: postgres -c shared_buffers=128MB -c max_connections=40 -c log_min_duration_statement=500
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U simrs -d simrs']
+      interval: 5s
+      retries: 30
+    deploy:
+      resources:
+        limits: { memory: 512M }
+    networks: [internal]
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+    environment:
+      NODE_ENV: production
+      PORT: '3000'
+      TZ: Asia/Jakarta
+      TRUST_PROXY: '2'
+      DATABASE_URL: postgres://simrs:${DB_PASSWORD}@postgres:5432/simrs
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET wajib}
+      DATA_ENCRYPTION_KEY: ${DATA_ENCRYPTION_KEY:?DATA_ENCRYPTION_KEY wajib}
+      CORS_ORIGIN: https://${DOMAIN}
+      SEED_DEMO: ${SEED_DEMO:-false}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-}
+      SATUSEHAT_MODE: ${SATUSEHAT_MODE:-mock}
+      BPJS_MODE: ${BPJS_MODE:-mock}
+    deploy:
+      resources:
+        limits: { memory: 512M }
+    logging: &logging
+      driver: json-file
+      options: { max-size: '20m', max-file: '5' }
+    networks: [internal]
+
+  web:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on: [backend]
+    deploy:
+      resources:
+        limits: { memory: 64M }
+    logging: *logging
+    networks:
+      internal: {}
+      edge:
+        aliases: [simrs-web]
+
+volumes:
+  pgdata:
+
+networks:
+  internal:
+  edge:
+    external: true
+    name: edge
