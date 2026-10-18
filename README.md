@@ -101,3 +101,18 @@ Basis `/api/v1`. Semua mutasi menerima `Idempotency-Key` (frontend mengirim otom
 - **Isolasi tenant** saat ini di level aplikasi (`facility_id` + guard + uji isolasi). Untuk SaaS data klinis multi-RS, blueprint §10 menyarankan isolasi schema/database per tenant dan kunci enkripsi per tenant — belum diterapkan.
 - **Belum dibangun (P2 blueprint)**: HR/payroll, CMMS/aset tetap, cost accounting, portal pasien, MFA/SSO (OIDC), PACS/DICOM, LIS/RIS dengan HL7 v2, laporan RL SIRS lengkap.
 - Frontend telah dibangun (`ng build` bersih) dan diuji asap lewat API; pengujian usability per persona (blueprint §15) belum dilakukan.
+
+## Deploy produksi (hospital.onesolusi.id)
+
+VPS `103.93.163.188` (Ubuntu 24.04) dipakai bersama Hotel ERP. Port 80/443 dipegang Caddy milik Hotel ERP; SIMRS tidak membuka port host dan terhubung ke Caddy lewat jaringan Docker eksternal `edge`.
+
+| Lokasi | Isi |
+|---|---|
+| `/opt/simrs` | Kode SIMRS + `.env.prod` (rahasia, mode 600 — jangan di-commit) |
+| `/opt/simrs/backups` | Backup harian `pg_dump` 02:30 WIB, simpan 14 hari (cron user `sysdev`) |
+| `/opt/hotel-erp/deploy/caddy-extra/` | `Caddyfile.multi` (import Caddyfile asli hotel + `*.caddy`) dan `hospital.caddy` |
+| `/opt/hotel-erp/docker-compose.prod.yml` | Service `web` ditambah `command`, mount `caddy-extra`, jaringan `edge` (backup: `*.bak-202610182116`) |
+
+Deploy ulang: unggah kode ke `/opt/simrs` (mis. `git -c core.autocrlf=false archive HEAD | ssh ... tar -x -C /opt/simrs`), lalu `/opt/simrs/deploy/deploy.sh`.
+
+> Jika compose Hotel ERP diganti dari sumbernya, tambahkan kembali 3 perubahan service `web` di atas — tanpa itu Caddy tidak lagi melayani hospital.onesolusi.id.
