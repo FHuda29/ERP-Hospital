@@ -1,0 +1,44 @@
+# SIMRS / Hospital ERP — stack lokal & staging
+# Jalankan: docker compose up -d --build
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: simrs
+      POSTGRES_USER: simrs
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-simrs_dev_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U simrs -d simrs"]
+      interval: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgres://simrs:${POSTGRES_PASSWORD:-simrs_dev_password}@postgres:5432/simrs
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET wajib diisi}
+      DATA_ENCRYPTION_KEY: ${DATA_ENCRYPTION_KEY:?DATA_ENCRYPTION_KEY wajib diisi (32 byte base64)}
+      SEED_DEMO: ${SEED_DEMO:-false}
+      SATUSEHAT_MODE: ${SATUSEHAT_MODE:-mock}
+      BPJS_MODE: ${BPJS_MODE:-mock}
+    ports:
+      - "3000:3000"
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+volumes:
+  pgdata:

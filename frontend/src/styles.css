@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+/* Design tokens — Blueprint §7.1 (primary #175CD3, success #15803D, warning #B45309,
+   critical #B42318, background #F6F8FB, text #182230). Grid 8px, skala tipografi 12/14/16/20/28. */
+@theme {
+  --font-sans: "Inter", "Aptos", "Segoe UI", system-ui, sans-serif;
+  --color-primary: #175cd3;
+  --color-primary-dark: #1249a8;
+  --color-primary-soft: #e8effc;
+  --color-success: #15803d;
+  --color-success-soft: #e7f5ec;
+  --color-warning: #b45309;
+  --color-warning-soft: #fdf1e3;
+  --color-critical: #b42318;
+  --color-critical-soft: #fdecea;
+  --color-surface: #ffffff;
+  --color-canvas: #f6f8fb;
+  --color-ink: #182230;
+  --color-ink-2: #475467;
+  --color-ink-3: #667085;
+  --color-line: #e4e7ec;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 20px;
+  --text-2xl: 28px;
+}
+
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@layer components {
+  .card { @apply bg-surface border border-line rounded-lg; }
+  .card-pad { @apply p-4; }
+  .h1 { @apply text-lg font-semibold text-ink; }
+  .h2 { @apply text-base font-semibold text-ink; }
+  .muted { @apply text-ink-3 text-xs; }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-md border border-line bg-surface px-3 h-9 text-sm font-medium text-ink
+      hover:bg-canvas disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap;
+  }
+  .btn-sm { @apply h-8 px-2.5 text-xs; }
+  .btn-primary { @apply bg-primary border-primary text-white hover:bg-primary-dark; }
+  .btn-danger { @apply bg-critical border-critical text-white hover:opacity-90; }
+  .btn-success { @apply bg-success border-success text-white hover:opacity-90; }
+  .btn-ghost { @apply border-transparent bg-transparent hover:bg-primary-soft text-primary; }
+
+  .label { @apply block text-xs font-medium text-ink-2 mb-1; }
+  .input {
+    @apply w-full h-9 rounded-md border border-line bg-white px-2.5 text-sm text-ink
+      focus:outline-2 focus:outline-primary focus:outline-offset-0 focus:border-primary;
+  }
+  textarea.input { @apply h-auto py-2 min-h-20; }
+  .field { @apply flex flex-col; }
+
+  .tbl { @apply w-full text-sm border-collapse; }
+  .tbl th { @apply text-left text-xs font-semibold text-ink-2 bg-canvas px-3 py-2 border-b border-line whitespace-nowrap; }
+  .tbl td { @apply px-3 py-2 border-b border-line align-top; }
+  .tbl tbody tr:hover { @apply bg-primary-soft/40; }
+  .num { @apply text-right tabular-nums; }
+
+  .badge { @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium border whitespace-nowrap; }
+  .badge-neutral { @apply bg-canvas text-ink-2 border-line; }
+  .badge-info { @apply bg-primary-soft text-primary border-primary/20; }
+  .badge-success { @apply bg-success-soft text-success border-success/20; }
+  .badge-warning { @apply bg-warning-soft text-warning border-warning/20; }
+  .badge-critical { @apply bg-critical-soft text-critical border-critical/20; }
+
+  .tabs { @apply flex gap-1 border-b border-line overflow-x-auto; }
+  .tab { @apply px-3 py-2 text-sm text-ink-2 border-b-2 border-transparent -mb-px cursor-pointer whitespace-nowrap hover:text-ink; }
+  .tab-active { @apply text-primary border-primary font-medium; }
+
+  .alert { @apply rounded-md border px-3 py-2 text-sm; }
+  .alert-critical { @apply bg-critical-soft border-critical/30 text-critical; }
+  .alert-warning { @apply bg-warning-soft border-warning/30 text-warning; }
+  .alert-info { @apply bg-primary-soft border-primary/30 text-primary; }
+  .alert-success { @apply bg-success-soft border-success/30 text-success; }
+}
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: white; }
+}
